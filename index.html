@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz de Países, Capitais e Continentes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .option {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .option:hover {
+      background-color: #f0f0f0;
+    }
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #bandeira {
+      max-width: 100%;
+      margin: 20px auto;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease-in;
+    }
+    #bandeira.mostrar {
+      display: block;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <h2 id="question">Carregando pergunta...</h2>
+  <img id="bandeira" src="" alt="Bandeira" />
+  <div id="options"></div>
+  <div class="feedback" id="feedback"></div>
+  <button id="nextBtn">Próxima pergunta</button>
+
+  <script>
+    const data = {
+      "Oceania": [
+        ["Austrália", "Camberra"],
+        ["Estados Federados da Micronésia", "Palikir"],
+        ["Fiji", "Suva"],
+        ["Ilhas Marshall", "Majuro"],
+        ["Ilhas Salomão", "Honiara"],
+        ["Kiribati", "Tarawa do Sul"],
+        ["Nauru", "Yaren"],
+        ["Nova Zelândia", "Wellington"],
+        ["Palau", "Ngerulmud"],
+        ["Papua-Nova Guiné", "Port Moresby"],
+        ["Samoa", "Apia"],
+        ["Tonga", "Nuku'alofa"],
+        ["Tuvalu", "Funafuti"],
+        ["Vanuatu", "Port Vila"]
+      ],
+      "América do Sul": [
+        ["Argentina", "Buenos Aires"],
+        ["Bolívia", "Sucre"],
+        ["Brasil", "Brasília"],
+        ["Chile", "Santiago"],
+        ["Colômbia", "Bogotá"],
+        ["Equador", "Quito"],
+        ["Guiana", "Georgetown"],
+        ["Paraguai", "Assunção"],
+        ["Peru", "Lima"],
+        ["Suriname", "Paramaribo"],
+        ["Uruguai", "Montevidéu"],
+        ["Venezuela", "Caracas"]
+      ],
+      "América Central": [
+        ["Antígua e Barbuda", "Saint John's"],
+        ["Bahamas", "Nassau"],
+        ["Barbados", "Bridgetown"],
+        ["Belize", "Belmopã"],
+        ["Costa Rica", "San José"],
+        ["Cuba", "Havana"],
+        ["Dominica", "Roseau"],
+        ["El Salvador", "San Salvador"],
+        ["Granada", "Saint George's"],
+        ["Guatemala", "Cidade da Guatemala"],
+        ["Haiti", "Porto Príncipe"],
+        ["Honduras", "Tegucigalpa"],
+        ["Jamaica", "Kingston"],
+        ["Nicarágua", "Manágua"],
+        ["Panamá", "Cidade do Panamá"],
+        ["República Dominicana", "Santo Domingo"],
+        ["Santa Lúcia", "Castries"],
+        ["São Cristóvão e Nevis", "Basseterre"],
+        ["São Vicente e Granadinas", "Kingstown"],
+        ["Trinidad e Tobago", "Porto de Espanha"]
+      ],
+      "América do Norte": [
+        ["Canadá", "Ottawa"],
+        ["Estados Unidos", "Washington, D.C."],
+        ["México", "Cidade do México"]
+      ]
+    };
+
+    const bandeiras = [
+      "ALEMANHA", "ANGOLA", "ARGENTINA", "AUSTRÁLIA", "BANGLADESH", "CANADÁ", "CHILE", "CHINA",
+      "COLÔMBIA", "CORÉIA DO SUL", "COSTA DO MARFIM", "CUBA", "EGITO", "ESPANHA", "ESTÔNIA", "ETIÓPIA",
+      "FILIPINAS", "FRANÇA", "GANA", "GRÉCIA", "INDONÉSIA", "IRLANDA", "ITÁLIA", "JORDÂNIA", "MALÁSIA",
+      "MARROCOS", "MONGÓLIA", "MOÇAMBIQUE", "MÉXICO", "NIGÉRIA", "NORUEGA", "NOVA ZELÂNDIA", "PAQUISTÃO",
+      "PERÚ", "POLÔNIA", "PORTUGAL", "QUÊNIA", "REINO UNIDO", "SENEGA", "SRI-LANKA", "SUÉCIA",
+      "TAILÂNDIA", "TANZÂNIA", "TUNÍSIA", "UGANDA", "VIETNÃ", "ZÂMBIA", "ÁFRICA DO SUL", "ÁUSTRIA", "ÍNDIA"
+    ];
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function getAllPairs() {
+      return Object.values(data).flat();
+    }
+
+    function newQuestion() {
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("bandeira").classList.remove("mostrar");
+      document.getElementById("bandeira").style.display = "none";
+      const type = Math.floor(Math.random() * 4);
+      const continents = Object.keys(data);
+
+      try {
+        if (type === 3) {
+          const correta = bandeiras[Math.floor(Math.random() * bandeiras.length)];
+          let options = [correta];
+          while (options.length < 4) {
+            const rand = bandeiras[Math.floor(Math.random() * bandeiras.length)];
+            if (!options.includes(rand)) options.push(rand);
+          }
+          shuffle(options);
+
+          document.getElementById("question").textContent = `De qual país é esta bandeira?`;
+          const img = document.getElementById("bandeira");
+          img.src = `bandeiras/${correta}.PNG`;
+          img.alt = `Bandeira de ${correta}`;
+          img.style.display = "block";
+          setTimeout(() => img.classList.add("mostrar"), 100);
+
+          displayOptions(options, correta);
+
+        } else if (type === 2) {
+          const continent = continents[Math.floor(Math.random() * continents.length)];
+          const correct = data[continent].length;
+          const allOptions = [correct];
+          let pool = [correct - 1, correct + 1, correct + 2, correct - 2, correct + 3, correct - 3];
+          pool = pool.filter(n => n > 0 && n !== correct);
+          shuffle(pool);
+          for (let i = 0; i < pool.length && allOptions.length < 4; i++) {
+            allOptions.push(pool[i]);
+          }
+          shuffle(allOptions);
+          document.getElementById("question").textContent = `Quantos países há na ${continent}?`;
+          displayOptions(allOptions.map(String), String(correct));
+
+        } else {
+          const allPairs = getAllPairs();
+          const pair = allPairs[Math.floor(Math.random() * allPairs.length)];
+          const [pais, capital] = pair;
+          let correctAnswer = type === 0 ? capital : pais;
+          let options = [correctAnswer];
+
+          while (options.length < 4) {
+            const randomPair = allPairs[Math.floor(Math.random() * allPairs.length)];
+            const candidate = type === 0 ? randomPair[1] : randomPair[0];
+            if (!options.includes(candidate)) {
+              options.push(candidate);
+            }
+          }
+
+          shuffle(options);
+          document.getElementById("question").textContent =
+            type === 0 ? `Qual é a capital de ${pais}?` : `De qual país é a capital ${capital}?`;
+          displayOptions(options, correctAnswer);
+        }
+      } catch (error) {
+        document.getElementById("question").textContent = "⚠️ Erro ao carregar pergunta. Recarregue a página.";
+        document.getElementById("options").innerHTML = "";
+        console.error("Erro no quiz:", error);
+      }
+    }
+
+    function displayOptions(options, correctAnswer) {
+      const container = document.getElementById("options");
+      container.innerHTML = "";
+      options.forEach(opt => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.textContent = opt;
+        btn.onclick = () => {
+          document.getElementById("feedback").textContent = opt === correctAnswer ? "✅ Correto!" : `❌ Errado! A resposta correta era: ${correctAnswer}`;
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", newQuestion);
+    newQuestion();
+  </script>
+</body>
+</html>
